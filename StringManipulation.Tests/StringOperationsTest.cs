@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Moq;
+using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace StringManipulation.Tests
 {
@@ -80,6 +83,29 @@ namespace StringManipulation.Tests
             var result = strOperation.FromRomanToNumber(romanNumber);
 
             Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void CountOcurrences()
+        {
+            var moqLogger = new Mock<ILogger<StringOperations>>();
+            var strOperation = new StringOperations(moqLogger.Object);
+
+            var result = strOperation.CountOccurrences("Papaya", 'a');
+
+            Assert.Equal(3, result);
+        }
+
+        [Fact]
+        public void ReadFile()
+        {
+            var strOperations = new StringOperations();
+            var moqFileReader = new Mock<IFileReaderConector>();
+            moqFileReader.Setup(p => p.ReadString(It.IsAny<string>())).Returns("Hello World");
+
+            var result = strOperations.ReadFile(moqFileReader.Object, "file.txt");
+
+            Assert.Equal("Hello World", result);
         }
     }
 }
